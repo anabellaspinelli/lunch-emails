@@ -1,0 +1,19 @@
+{
+  "name": "lunch-emails",
+  "version": "1.0.0",
+  "description": "Script for parsing the content of lunch emails.",
+  "main": "index.js",
+  "repository": "https://github.com/anabellaspinelli/lunch-emails.git",
+  "author": "Anabella Spinelli <anabellaspinelli@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "jest": "^24.8.0"
+  },
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch"
+  }
+}
