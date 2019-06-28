@@ -1,111 +1,113 @@
-const myFunc = async () => {
-  const DAYS = {
-    MONDAY: "MONDAY",
-    TUESDAY: "TUESDAY",
-    WEDNESDAY: "WEDNESDAY",
-    THURSDAY: "THURSDAY",
-    FRIDAY: "FRIDAY",
+////////////////////////
+//      NEW CODE      //
+////////////////////////
+
+const DAYS = {
+  MONDAY: "MONDAY",
+  TUESDAY: "TUESDAY",
+  WEDNESDAY: "WEDNESDAY",
+  THURSDAY: "THURSDAY",
+  FRIDAY: "FRIDAY",
+}
+
+const REGEXPS = {
+  VEGETARIAN: /\*Vegetarian\:\*[\s\w\,\(\)\.\"\-]*/gm,
+  VEGAN: /\*Vegan\:\*[\s\w\,\(\)\.\"\-]*/gm,
+  OMNI: /\*Omni\:\*[\s\w\,\(\)\.\"\-]*/gm,
+}
+
+const NO_DISH_OPTIONS = ["JUST SALAD FOR ME", "NO LUNCH FOR ME TODAY"]
+
+const getAllDishesPerDay = formDefinition => {
+  const threeDishesPerDay = Object.values(DAYS).reduce((accum, day) => {
+    const fullMenuOfTheDay = formDefinition.fields.find(field =>
+      field.title.includes(day),
+    ).properties.description
+
+    const threeDishesOfTheDay = fullMenuOfTheDay.split(
+      "----------------------------------------",
+    )[1] // discard Salad bar
+
+    accum[day] = threeDishesOfTheDay
+    return accum
+  }, {})
+
+  return threeDishesPerDay // MONDAY: "OMNI: blablabla \n VEGAN: blboaboaboa \n etc..."
+}
+
+const getDishTypeFromChoice = dayChoice => {
+  const pair = dayChoice.split(" - ").map(el => el.toUpperCase())
+
+  // No lunch options
+  if (pair.length === 1) {
+    return pair[0]
   }
 
-  const REGEXPS = {
-    VEGETARIAN: /\*Vegetarian\:\*[\s\w\,\(\)\.\"\-]*/gm,
-    VEGAN: /\*Vegan\:\*[\s\w\,\(\)\.\"\-]*/gm,
-    OMNI: /\*Omni\:\*[\s\w\,\(\)\.\"\-]*/gm,
-  }
+  return pair[1] // Default
+}
 
-  // DELETE ME
-  const inputData = {
-    mondayChoice: "HQ - Just salad for me",
-    tuesdayChoice: "No lunch for me today :)",
-    wednesdayChoice: "HQ - Omni",
-    thursdayChoice: "BH - Vegan",
-    fridayChoice: "BH - Vegan",
-  }
+const getSelectedDishTypePerDay = inputData => {
+  const selectedDishTypePerDay = Object.values(DAYS).reduce((accum, day) => {
+    const dayChoice = inputData[`${day.toLowerCase()}Choice`]
 
-  const NO_DISH_OPTIONS = ["JUST SALAD FOR ME", "NO LUNCH FOR ME TODAY"]
+    accum[day] = getDishTypeFromChoice(dayChoice)
+    return accum
+  }, {})
 
-  // extract dish name from menu of the day
-  const getDishNamesPerDay = (formDefinition, selections) => {
-    const dishNamePerDay = Object.values(DAYS).reduce((accum, day) => {
-      const noDish = NO_DISH_OPTIONS.some(option => {
-        selections[day].dishType.includes(option)
-      })
+  return selectedDishTypePerDay
+}
 
-      if (noDish) {
-        accum[day] = inputData[`${day.toLowerCase()}Choice`]
-        return accum
-      }
+const getSelectedDishesPerDay = (dishOptionsPerDay, selectedDishTypePerDay) => {
+  const selectedDishesPerDay = Object.values(DAYS).reduce((accum, day) => {
+    const noDishSelected = NO_DISH_OPTIONS.some(NDO =>
+      selectedDishTypePerDay[day].includes(NDO),
+    )
 
-      const fullMenuOfTheDay = formDefinition.fields.find(field =>
-        field.title.includes(day),
-      ).properties.description
-
-      const threeDishesOfTheDay = fullMenuOfTheDay.split(
-        "----------------------------------------",
-      )[1] // discard Salad bar
-
-      accum[day] = threeDishesOfTheDay
-        .match(REGEXPS[selections[day].dishType])[0]
-        .split("* ")[1]
+    if (noDishSelected) {
+      accum[day] = selectedDishTypePerDay[day]
       return accum
-    }, {})
-
-    return dishNamePerDay
-  }
-
-  // returns ['HQ', 'Vegan']
-  const getOfficeAndDishType = dayChoice => {
-    const pair = dayChoice.split(" - ").map(el => el.toUpperCase())
-
-    if (pair.length === 1) {
-      return {
-        location: pair[0],
-        dishType: pair[0],
-      }
     }
 
-    return {
-      location: pair[0],
-      dishType: pair[1],
-    }
-  }
+    accum[day] = dishOptionsPerDay[day]
+      .match(REGEXPS[selectedDishTypePerDay[day]])[0]
+      .split("* ")[1]
 
-  const selections = {
-    MONDAY: getOfficeAndDishType(inputData.mondayChoice),
-    TUESDAY: getOfficeAndDishType(inputData.tuesdayChoice),
-    WEDNESDAY: getOfficeAndDishType(inputData.wednesdayChoice),
-    THURSDAY: getOfficeAndDishType(inputData.thursdayChoice),
-    FRIDAY: getOfficeAndDishType(inputData.fridayChoice),
-  }
+    return accum
+  }, {})
 
+  return selectedDishesPerDay
+}
+
+////////////////////////
+//       SCRIPT       //
+////////////////////////
+
+const myAsyncFunc = async () => {
   // Get form definition
   const res = await fetch("https://api.typeform.com/forms/so1jyt")
   const formDefinition = await res.json()
 
-  const dishNamePerDay = getDishNamesPerDay(formDefinition, selections)
+  const dishOptionsPerDay = getAllDishesPerDay(formDefinition)
+  const selectedDishTypePerDay = getSelectedDishTypePerDay(inputData)
 
-  console.log({ dishNamePerDay })
-  return dishNamePerDay
+  const selectedDishesPerDay = getSelectedDishesPerDay(
+    dishOptionsPerDay,
+    selectedDishTypePerDay,
+  )
+
+  return selectedDishesPerDay
 }
 
-// myFunc()
+myAsyncFunc()
 
-const getOfficeAndDishType = dayChoice => {
-  const pair = dayChoice.split(" - ").map(el => el.toUpperCase())
-
-  if (pair.length === 1) {
-    return {
-      location: pair[0],
-      dishType: pair[0],
-    }
-  }
-
-  return {
-    location: pair[0],
-    dishType: pair[1],
-  }
-}
-
+// EXPORTING FOR TESTING PURPOSES //
 module.exports = {
-  getOfficeAndDishType,
+  getAllDishesPerDay,
+  getDishTypeFromChoice,
+  getSelectedDishTypePerDay,
+  getSelectedDishesPerDay,
+  constants: {
+    DAYS,
+    REGEXPS,
+  },
 }
