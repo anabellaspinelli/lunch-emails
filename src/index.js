@@ -36,14 +36,13 @@ const getAllDishesPerDay = formDefinition => {
 }
 
 const getDishTypeFromChoice = dayChoice => {
-  const pair = dayChoice.split(" - ").map(el => el.toUpperCase())
+  const SEPARATOR = " - "
 
-  // No lunch options
-  if (pair.length === 1) {
-    return pair[0]
+  if (choice.includes(SEPARATOR)) {
+    return choice.split(SEPARATOR)[1]
   }
 
-  return pair[1] // Default
+  return choice
 }
 
 const getSelectedDishTypePerDay = inputData => {
