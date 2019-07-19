@@ -1,13 +1,9 @@
-////////////////////////
-//      NEW CODE      //
-////////////////////////
-
 const DAYS = {
-  MONDAY: "MONDAY",
-  TUESDAY: "TUESDAY",
-  WEDNESDAY: "WEDNESDAY",
-  THURSDAY: "THURSDAY",
-  FRIDAY: "FRIDAY",
+  MONDAY: 'MONDAY',
+  TUESDAY: 'TUESDAY',
+  WEDNESDAY: 'WEDNESDAY',
+  THURSDAY: 'THURSDAY',
+  FRIDAY: 'FRIDAY',
 }
 
 const REGEXPS = {
@@ -16,7 +12,7 @@ const REGEXPS = {
   OMNI: /\*Omni\:\*[\s\w\,\(\)\.\"\-]*/gm,
 }
 
-const NO_DISH_OPTIONS = ["JUST SALAD FOR ME", "NO LUNCH FOR ME TODAY"]
+const NO_DISH_OPTIONS = ['JUST SALAD FOR ME', 'NO LUNCH FOR ME TODAY']
 
 const getAllDishesPerDay = formDefinition => {
   const threeDishesPerDay = Object.values(DAYS).reduce((accum, day) => {
@@ -25,7 +21,7 @@ const getAllDishesPerDay = formDefinition => {
     ).properties.description
 
     const threeDishesOfTheDay = fullMenuOfTheDay.split(
-      "----------------------------------------",
+      '----------------------------------------',
     )[1] // discard Salad bar
 
     accum[day] = threeDishesOfTheDay
@@ -36,13 +32,13 @@ const getAllDishesPerDay = formDefinition => {
 }
 
 const getDishTypeFromChoice = dayChoice => {
-  const SEPARATOR = " - "
+  const SEPARATOR = ' - '
 
-  if (choice.includes(SEPARATOR)) {
-    return choice.split(SEPARATOR)[1]
+  if (dayChoice.includes(SEPARATOR)) {
+    return dayChoice.split(SEPARATOR)[1]
   }
 
-  return choice
+  return dayChoice
 }
 
 const getSelectedDishTypePerDay = inputData => {
@@ -69,7 +65,7 @@ const getSelectedDishesPerDay = (dishOptionsPerDay, selectedDishTypePerDay) => {
 
     accum[day] = dishOptionsPerDay[day]
       .match(REGEXPS[selectedDishTypePerDay[day]])[0]
-      .split("* ")[1]
+      .split('* ')[1]
 
     return accum
   }, {})
@@ -83,7 +79,7 @@ const getSelectedDishesPerDay = (dishOptionsPerDay, selectedDishTypePerDay) => {
 
 const myAsyncFunc = async () => {
   // Get form definition
-  const res = await fetch("https://api.typeform.com/forms/so1jyt")
+  const res = await fetch('https://api.typeform.com/forms/so1jyt')
   const formDefinition = await res.json()
 
   const dishOptionsPerDay = getAllDishesPerDay(formDefinition)

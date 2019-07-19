@@ -4,26 +4,26 @@ const {
   getSelectedDishTypePerDay,
   getSelectedDishesPerDay,
   constants: { DAYS, REGEXPS },
-} = require("../index")
+} = require('../index')
 
-const { formDefinition } = require("./form-definition")
-const { inputData } = require("./input-data")
+const { formDefinition } = require('./form-definition')
+const { inputData } = require('./input-data')
 const {
   dishOptionsPerDay,
   dishTypePerDay,
   dishTypePerDayWithNoLunch,
   dishOptionsPerDayWithNoLunch,
-} = require("./test-data")
+} = require('./test-data')
 
-describe("getDishTypeFromChoice", () => {
-  it("returns the selected dish type", () => {
-    const dishType = getDishTypeFromChoice("HQ - Omni")
-    expect(dishType).toEqual("OMNI")
+describe('getDishTypeFromChoice', () => {
+  it('returns the selected dish type', () => {
+    const dishType = getDishTypeFromChoice('HQ - Omni')
+    expect(dishType).toEqual('Omni')
   })
 })
 
-describe("getAllDishesPerDay", () => {
-  it("returns an object of dish options per day", () => {
+describe('getAllDishesPerDay', () => {
+  it('returns an object of dish options per day', () => {
     const dishesPerDay = getAllDishesPerDay(formDefinition)
 
     Object.values(DAYS).forEach(day => {
@@ -33,12 +33,12 @@ describe("getAllDishesPerDay", () => {
   })
 })
 
-describe("getSelectedDishTypePerDay", () => {
-  it("returns an object of selected dish types per day", () => {
+describe('getSelectedDishTypePerDay', () => {
+  it('returns an object of selected dish types by day', () => {
     const selectedDishTypePerDay = getSelectedDishTypePerDay(inputData)
 
     Object.values(DAYS).forEach(day => {
-      const dayChoice = inputData[`${day.toLowerCase()}Choice`].toUpperCase()
+      const dayChoice = inputData[`${day.toLowerCase()}Choice`]
       const selectedDishType = selectedDishTypePerDay[day]
 
       expect(selectedDishTypePerDay).toHaveProperty(day)
@@ -48,8 +48,8 @@ describe("getSelectedDishTypePerDay", () => {
   })
 })
 
-describe("getSelectedDishesPerDay", () => {
-  it("returns an object of selected dish names per day", () => {
+describe('getSelectedDishesPerDay', () => {
+  it('returns an object of selected dish names per day', () => {
     const selectedDishPerDay = getSelectedDishesPerDay(
       dishOptionsPerDay,
       dishTypePerDay,
