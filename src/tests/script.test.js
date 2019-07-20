@@ -4,7 +4,7 @@ const {
   getSelectedDishTypePerDay,
   getSelectedDishesPerDay,
   constants: { DAYS, REGEXPS },
-} = require('../index')
+} = require('../script')
 
 const { formDefinition } = require('./form-definition')
 const { inputData } = require('./input-data')
